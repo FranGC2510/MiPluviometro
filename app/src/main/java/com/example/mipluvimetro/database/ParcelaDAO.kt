@@ -4,6 +4,14 @@ import android.content.ContentValues
 import android.content.Context
 import com.example.mipluvimetro.models.Parcela
 
+/**
+ * Data Access Object (DAO) para la entidad [Parcela].
+ *
+ * Encapsula todas las operaciones CRUD (Crear, Leer, Borrar) relacionadas
+ * con las parcelas. Aísla la lógica SQL del resto de la aplicación.
+ *
+ * @param context Contexto necesario para abrir la conexión a BD.
+ */
 class ParcelaDAO(context: Context) {
 
     private val dbHelper = AdminSQLite(context)

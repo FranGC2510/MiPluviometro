@@ -4,6 +4,13 @@ import android.content.ContentValues
 import android.content.Context
 import com.example.mipluvimetro.models.Registro
 
+/**
+ * Data Access Object (DAO) para la entidad [Registro].
+ *
+ * Gestiona la inserción de lluvias y consultas complejas como:
+ * - Obtener el historial reciente.
+ * - Calcular sumas totales (Estadísticas) por rangos de fecha.
+ */
 class RegistroDAO(context: Context) {
     private val dbHelper = AdminSQLite(context)
 
