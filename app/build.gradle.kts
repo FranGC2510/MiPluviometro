@@ -53,4 +53,7 @@ dependencies {
 
 // Corrutinas (Para hacer la petición en segundo plano y no congelar la app)
     implementation(libs.kotlinx.coroutines.android)
+
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
 }
