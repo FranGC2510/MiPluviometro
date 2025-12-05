@@ -1,10 +1,16 @@
 package com.example.mipluvimetro.ui
 
+import android.app.AlertDialog
+import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.CheckBox
+import android.widget.Spinner
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -12,6 +18,11 @@ import com.example.mipluvimetro.R
 import com.example.mipluvimetro.adapter.LluviaAdapter
 import com.example.mipluvimetro.database.ParcelaDAO
 import com.example.mipluvimetro.database.RegistroDAO
+import com.example.mipluvimetro.models.Registro
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.switchmaterial.SwitchMaterial
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -56,6 +67,11 @@ class HomeFragment : Fragment() {
         tvTotalMes = view.findViewById(R.id.tvTotalMes)
         tvTotalAnio = view.findViewById(R.id.tvTotalAnio)
         recyclerView = view.findViewById(R.id.recyclerViewLluvias)
+
+        val fabAdd = view.findViewById<FloatingActionButton>(R.id.fabAddLluvia)
+        fabAdd.setOnClickListener {
+            mostrarDialogoNuevoRegistro()
+        }
 
         setupRecyclerView()
     }
@@ -121,5 +137,98 @@ class HomeFragment : Fragment() {
 
         val litrosAnio = registroDAO.sumarLitrosPorRango(inicioAnio, hoy)
         tvTotalAnio.text = String.format("%.1f", litrosAnio)
+    }
+
+    /**
+     * Muestra un cuadro de diálogo flotante para registrar una nueva lluvia.
+     *
+     * Este método gestiona todo el ciclo de vida de la captura de datos:
+     * 1. Valida que existan parcelas (requisito previo).
+     * 2. Configura los selectores de Fecha (DatePicker) y Parcela (Spinner).
+     * 3. Gestiona la visibilidad condicional del campo de incidencias.
+     * 4. Guarda el registro en la base de datos y actualiza el Dashboard.
+     */
+    private fun mostrarDialogoNuevoRegistro() {
+        // No podemos registrar lluvia si no hay fincas dadas de alta.
+        val listaParcelas = parcelaDAO.obtenerTodas()
+        if (listaParcelas.isEmpty()) {
+            Toast.makeText(requireContext(), "Primero crea una parcela en la pestaña 'Mis Parcelas'", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        val builder = AlertDialog.Builder(requireContext())
+        val dialogView = layoutInflater.inflate(R.layout.dialog_nuevo_registro, null)
+        builder.setView(dialogView)
+
+        val spinner = dialogView.findViewById<Spinner>(R.id.spinnerParcelas)
+        val etLitros = dialogView.findViewById<TextInputEditText>(R.id.etLitros)
+        val tvFecha = dialogView.findViewById<TextView>(R.id.tvFechaSeleccionada)
+        val switchIncidencias = dialogView.findViewById<SwitchMaterial>(R.id.switchIncidencias)
+        val layoutIncidencias = dialogView.findViewById<TextInputLayout>(R.id.layoutIncidencias)
+        val etIncidencias = dialogView.findViewById<TextInputEditText>(R.id.etIncidencias)
+        val cbEmail = dialogView.findViewById<CheckBox>(R.id.cbEnviarReporte)
+
+        // Configurar Spinner (Adapter de Parcelas)
+        // Creamos una lista solo con los nombres para mostrar en el spinner
+        val nombresParcelas = listaParcelas.map { it.nombre }
+        val spinnerAdapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_dropdown_item,
+            nombresParcelas
+        )
+        spinner.adapter = spinnerAdapter
+
+        val cal = Calendar.getInstance()
+        val formatoVisible = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val formatoBD = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) // Formato para SQLite
+
+        var fechaGuardar = formatoBD.format(cal.time) // Valor inicial
+        tvFecha.text = "Fecha: ${formatoVisible.format(cal.time)}"
+
+        tvFecha.setOnClickListener {
+            DatePickerDialog(requireContext(), { _, year, month, day ->
+                cal.set(year, month, day)
+                fechaGuardar = formatoBD.format(cal.time)
+                tvFecha.text = "Fecha: ${formatoVisible.format(cal.time)}"
+            }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show()
+        }
+
+        switchIncidencias.setOnCheckedChangeListener { _, isChecked ->
+            layoutIncidencias.visibility = if (isChecked) View.VISIBLE else View.GONE
+        }
+
+        builder.setPositiveButton("Guardar") { dialog, _ ->
+            val litrosTexto = etLitros.text.toString()
+
+            if (litrosTexto.isNotEmpty()) {
+                val posicionSpinner = spinner.selectedItemPosition
+                val parcelaSeleccionada = listaParcelas[posicionSpinner]
+
+                val textoIncidencias = if (switchIncidencias.isChecked) etIncidencias.text.toString() else ""
+
+                val nuevoRegistro = Registro(
+                    idParcela = parcelaSeleccionada.id,
+                    fecha = fechaGuardar,
+                    litros = litrosTexto.toFloatOrNull() ?: 0f,
+                    incidencias = textoIncidencias
+                )
+
+                registroDAO.insertar(nuevoRegistro)
+
+                // Si marcó enviar email (Simulación)
+                if (cbEmail.isChecked) {
+                    Toast.makeText(requireContext(), "Reporte enviado por correo (Simulado)", Toast.LENGTH_SHORT).show()
+                }
+
+                cargarDatosDashboard() // Recargar pantalla
+                Toast.makeText(requireContext(), "Registro guardado", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+            } else {
+                Toast.makeText(requireContext(), "Debes introducir los litros", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        builder.setNegativeButton("Cancelar", null)
+        builder.create().show()
     }
 }
