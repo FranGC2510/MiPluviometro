@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">Mi Pluviómetro</string>
+
+    <string name="nav_inicio">Inicio</string>
+    <string name="nav_parcelas">Mis Parcelas</string>
+    <string name="nav_clima">Previsión</string>
+
+    <string name="dash_titulo_resumen">Resumen Hidrológico</string>
+    <string name="dash_card_mes">Mes Actual</string>
+    <string name="dash_card_anio">Año Hidrológico</string>
+    <string name="dash_unidad_litros">L/m²</string>
+    <string name="dash_valor_placeholder">--</string>
+    <string name="dash_header_lista">Últimos Registros</string>
+
+    <string name="desc_icono_lluvia">Icono de lluvia</string>
 </resources>
