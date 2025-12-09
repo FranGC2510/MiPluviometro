@@ -51,4 +51,11 @@
     <string name="dialog_eliminar_registro_titulo">¿Eliminar registro?</string>
     <string name="dialog_eliminar_registro_msg">Vas a borrar el registro de %1$.1f litros del día %2$s.</string>
     <string name="formato_fecha_visible">Fecha: %s</string>
+
+    <string name="titulo_clima">Previsión Meteorológica</string>
+    <string name="hint_buscar_ciudad">Ciudad (ej: Madrid,ES)</string>
+    <string name="btn_buscar">Buscar</string>
+    <string name="error_clima_vacio">No se encontraron datos. Revisa el nombre.</string>
+    <string name="formato_temp">%.1f°C</string>
+    <string name="formato_lluvia_prevista">%.1f mm</string>
 </resources>
