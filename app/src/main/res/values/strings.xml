@@ -40,4 +40,15 @@
     <string name="btn_borrar">Borrar</string>
     <string name="btn_cancelar">Cancelar</string>
     <string name="btn_guardar">Guardar</string>
+
+    <string name="titulo_nuevo_registro">Registrar Lluvia</string>
+    <string name="titulo_editar_registro">Editar Registro</string>
+    <string name="btn_actualizar">Actualizar</string>
+    <string name="msg_sin_parcelas">Primero crea una parcela en la pestaña \'Mis Parcelas\'</string>
+    <string name="msg_registro_eliminado">Registro eliminado</string>
+    <string name="msg_registro_actualizado">Registro actualizado</string>
+    <string name="msg_falta_litros">Debes introducir los litros</string>
+    <string name="dialog_eliminar_registro_titulo">¿Eliminar registro?</string>
+    <string name="dialog_eliminar_registro_msg">Vas a borrar el registro de %1$.1f litros del día %2$s.</string>
+    <string name="formato_fecha_visible">Fecha: %s</string>
 </resources>

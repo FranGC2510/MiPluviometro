@@ -63,4 +63,27 @@ class RegistroDAO(context: Context) {
         db.close()
         return total
     }
+
+    // Actualizar un registro existente
+    fun actualizar(registro: Registro): Int {
+        val db = dbHelper.writableDatabase
+        val values = ContentValues().apply {
+            put(AdminSQLite.COL_REG_PARCELA_ID, registro.idParcela)
+            put(AdminSQLite.COL_REG_FECHA, registro.fecha)
+            put(AdminSQLite.COL_REG_LITROS, registro.litros)
+            put(AdminSQLite.COL_REG_INCIDENCIAS, registro.incidencias)
+        }
+
+        val filas = db.update(AdminSQLite.TABLA_REGISTROS, values, "${AdminSQLite.COL_REG_ID}=?", arrayOf(registro.id.toString()))
+        db.close()
+        return filas
+    }
+
+    // Borrar un registro por su ID
+    fun borrar(id: Int): Int {
+        val db = dbHelper.writableDatabase
+        val filas = db.delete(AdminSQLite.TABLA_REGISTROS, "${AdminSQLite.COL_REG_ID}=?", arrayOf(id.toString()))
+        db.close()
+        return filas
+    }
 }
