@@ -23,6 +23,7 @@ class ParcelaDAO(context: Context) {
             put(AdminSQLite.COL_PARCELA_CULTIVO, parcela.cultivo)
             put(AdminSQLite.COL_PARCELA_LAT, parcela.ubicacionLat)
             put(AdminSQLite.COL_PARCELA_LON, parcela.ubicacionLon)
+            put(AdminSQLite.COL_PARCELA_ACTIVA, if (parcela.activa) 1 else 0)
         }
         val id = db.insert(AdminSQLite.TABLA_PARCELAS, null, values)
         db.close()
@@ -30,10 +31,17 @@ class ParcelaDAO(context: Context) {
     }
 
     fun obtenerTodas(): List<Parcela> {
+        return ejecutarConsulta("SELECT * FROM ${AdminSQLite.TABLA_PARCELAS} WHERE ${AdminSQLite.COL_PARCELA_ACTIVA} = 1")
+    }
+
+    fun obtenerTodasIncluidoBorradas(): List<Parcela> {
+        return ejecutarConsulta("SELECT * FROM ${AdminSQLite.TABLA_PARCELAS}")
+    }
+
+    private fun ejecutarConsulta(query: String): List<Parcela> {
         val lista = ArrayList<Parcela>()
         val db = dbHelper.readableDatabase
-        val cursor = db.rawQuery("SELECT * FROM ${AdminSQLite.TABLA_PARCELAS}", null)
-
+        val cursor = db.rawQuery(query, null)
         if (cursor.moveToFirst()) {
             do {
                 val id = cursor.getInt(cursor.getColumnIndexOrThrow(AdminSQLite.COL_PARCELA_ID))
@@ -41,8 +49,9 @@ class ParcelaDAO(context: Context) {
                 val cultivo = cursor.getString(cursor.getColumnIndexOrThrow(AdminSQLite.COL_PARCELA_CULTIVO))
                 val lat = cursor.getDouble(cursor.getColumnIndexOrThrow(AdminSQLite.COL_PARCELA_LAT))
                 val lon = cursor.getDouble(cursor.getColumnIndexOrThrow(AdminSQLite.COL_PARCELA_LON))
+                val activaInt = cursor.getInt(cursor.getColumnIndexOrThrow(AdminSQLite.COL_PARCELA_ACTIVA))
 
-                lista.add(Parcela(id, nombre, cultivo, lat, lon))
+                lista.add(Parcela(id, nombre, cultivo, lat, lon, activaInt == 1))
             } while (cursor.moveToNext())
         }
         cursor.close()
@@ -52,7 +61,15 @@ class ParcelaDAO(context: Context) {
 
     fun borrar(id: Int): Int {
         val db = dbHelper.writableDatabase
-        val filas = db.delete(AdminSQLite.TABLA_PARCELAS, "${AdminSQLite.COL_PARCELA_ID}=?", arrayOf(id.toString()))
+        val values = ContentValues()
+        values.put(AdminSQLite.COL_PARCELA_ACTIVA, 0) // La marcamos como inactiva
+
+        val filas = db.update(
+            AdminSQLite.TABLA_PARCELAS,
+            values,
+            "${AdminSQLite.COL_PARCELA_ID}=?",
+            arrayOf(id.toString())
+        )
         db.close()
         return filas
     }

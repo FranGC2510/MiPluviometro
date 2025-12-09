@@ -13,4 +13,49 @@
     <string name="dash_header_lista">Últimos Registros</string>
 
     <string name="desc_icono_lluvia">Icono de lluvia</string>
+    <string name="desc_fab_add_lluvia">Añadir registro de lluvia</string>
+    <string name="desc_fab_add_parcela">Añadir nueva parcela</string>
+    <string name="titulo_mis_fincas">Mis Fincas</string>
+    <string name="dialog_titulo_nueva_parcela">Nueva Parcela</string>
+    <string name="hint_nombre_parcela">Nombre de la parcela (ej: La Huerta)</string>
+    <string name="hint_cultivo_parcela">Tipo de Cultivo (ej: Cereal)</string>
+    <string name="btn_usar_gps">Usar mi ubicación actual</string>
+    <string name="tv_coords_placeholder">Coords: 0.0, 0.0</string>
+
+    <string name="dialog_titulo_registro">Registrar Lluvia</string>
+    <string name="label_donde_llovio">¿Dónde ha llovido?</string>
+    <string name="hint_litros">Litros (L/m²)</string>
+    <string name="text_fecha_hoy">Hoy (Toque para cambiar)</string>
+    <string name="switch_incidencias">¿Hubo daños o incidencias?</string>
+    <string name="hint_incidencias">Describa el daño (Granizo, viento...)</string>
+    <string name="cb_reporte_email">Enviar reporte por email (Simulado)</string>
+
+    <string name="desc_borrar_parcela">Borrar parcela</string>
+
+    <string name="msg_gps_simulado">Ubicación capturada (Simulada)</string>
+    <string name="msg_parcela_guardada">Parcela guardada correctamente</string>
+    <string name="err_campos_vacios">Rellena todos los campos</string>
+    <string name="dialog_borrar_titulo">¿Borrar Parcela?</string>
+    <string name="dialog_borrar_mensaje">Se borrará \'%1$s\' y todo su historial de lluvias. Esta acción no se puede deshacer.</string>
+    <string name="btn_borrar">Borrar</string>
+    <string name="btn_cancelar">Cancelar</string>
+    <string name="btn_guardar">Guardar</string>
+
+    <string name="titulo_nuevo_registro">Registrar Lluvia</string>
+    <string name="titulo_editar_registro">Editar Registro</string>
+    <string name="btn_actualizar">Actualizar</string>
+    <string name="msg_sin_parcelas">Primero crea una parcela en la pestaña \'Mis Parcelas\'</string>
+    <string name="msg_registro_eliminado">Registro eliminado</string>
+    <string name="msg_registro_actualizado">Registro actualizado</string>
+    <string name="msg_falta_litros">Debes introducir los litros</string>
+    <string name="dialog_eliminar_registro_titulo">¿Eliminar registro?</string>
+    <string name="dialog_eliminar_registro_msg">Vas a borrar el registro de %1$.1f litros del día %2$s.</string>
+    <string name="formato_fecha_visible">Fecha: %s</string>
+
+    <string name="titulo_clima">Previsión Meteorológica</string>
+    <string name="hint_buscar_ciudad">Ciudad (ej: Madrid,ES)</string>
+    <string name="btn_buscar">Buscar</string>
+    <string name="error_clima_vacio">No se encontraron datos. Revisa el nombre.</string>
+    <string name="formato_temp">%.1f°C</string>
+    <string name="formato_lluvia_prevista">%.1f mm</string>
 </resources>

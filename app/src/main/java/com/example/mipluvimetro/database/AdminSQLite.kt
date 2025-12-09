@@ -16,7 +16,7 @@ import android.database.sqlite.SQLiteOpenHelper
 class AdminSQLite(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
     companion object {
         private const val DATABASE_NAME = "pluviometro.db"
-        private const val DATABASE_VERSION = 1
+        private const val DATABASE_VERSION = 2
 
         // Tabla Parcelas
         const val TABLA_PARCELAS = "parcelas"
@@ -25,6 +25,7 @@ class AdminSQLite(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
         const val COL_PARCELA_CULTIVO = "cultivo"
         const val COL_PARCELA_LAT = "ubicacion_lat"
         const val COL_PARCELA_LON = "ubicacion_lon"
+        const val COL_PARCELA_ACTIVA = "activa"
 
         // Tabla Registros Lluvia
         const val TABLA_REGISTROS = "registros_lluvia"
@@ -43,7 +44,8 @@ class AdminSQLite(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
                 $COL_PARCELA_NOMBRE TEXT,
                 $COL_PARCELA_CULTIVO TEXT,
                 $COL_PARCELA_LAT REAL,
-                $COL_PARCELA_LON REAL
+                $COL_PARCELA_LON REAL,
+                $COL_PARCELA_ACTIVA INTEGER DEFAULT 1
             )
         """.trimIndent()
         db?.execSQL(crearParcelas)
@@ -69,7 +71,8 @@ class AdminSQLite(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         var versionActual = oldVersion
         if(versionActual < 2){
-            versionActual=2
+            db?.execSQL("ALTER TABLE $TABLA_PARCELAS ADD COLUMN $COL_PARCELA_ACTIVA INTEGER DEFAULT 1")
+            versionActual = 2
         }
     }
 }

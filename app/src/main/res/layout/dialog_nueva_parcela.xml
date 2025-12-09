@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/dialog_titulo_nueva_parcela"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/primary_dark"
+        android:layout_marginBottom="16dp"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/hint_nombre_parcela">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etNombreParcela"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textCapWords"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:hint="@string/hint_cultivo_parcela">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etCultivoParcela"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textCapWords"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/btnUsarGPS"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/btn_usar_gps"
+        android:drawableLeft="@drawable/ic_location"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:textColor="@color/primary_blue"/>
+
+    <TextView
+        android:id="@+id/tvCoordenadasInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/tv_coords_placeholder"
+        android:gravity="center"
+        android:textSize="12sp"
+        android:layout_marginTop="4dp"
+        android:textColor="@color/text_light"/>
+
+</LinearLayout>

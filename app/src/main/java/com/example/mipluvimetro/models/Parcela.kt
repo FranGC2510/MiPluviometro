@@ -14,5 +14,6 @@ data class Parcela(
     val nombre: String,
     val cultivo: String,
     val ubicacionLat: Double,
-    val ubicacionLon: Double
+    val ubicacionLon: Double,
+    val activa: Boolean = true
 )

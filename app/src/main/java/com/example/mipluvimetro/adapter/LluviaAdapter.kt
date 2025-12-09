@@ -19,7 +19,9 @@ import com.example.mipluvimetro.models.Registro
  */
 class LluviaAdapter (
     private var listaRegistros: List<Registro>,
-    private var mapaParcelas: Map<Int, String> // ID(1) -> Nombre
+    private var mapaParcelas: Map<Int, String>, // ID(1) -> Nombre
+    private val onClickEditar: (Registro) -> Unit,
+    private val onLongClickBorrar: (Registro) -> Unit
 ) : RecyclerView.Adapter<LluviaAdapter.LluviaViewHolder>() {
 
     /**
@@ -60,16 +62,9 @@ class LluviaAdapter (
     override fun onBindViewHolder(holder: LluviaViewHolder, position: Int) {
         val registro = listaRegistros[position]
 
-        // Poner los Litros
         holder.tvLitros.text = registro.litros.toString()
-
-        // Poner la Fecha
         holder.tvFecha.text = registro.fecha
-
-        // Buscar el nombre de la parcela usando el mapa
-        // Si no encuentra el ID, pone "Parcela Desconocida"
-        val nombreParcela = mapaParcelas[registro.idParcela] ?: "Parcela Desconocida"
-        holder.tvParcela.text = nombreParcela
+        holder.tvParcela.text = mapaParcelas[registro.idParcela] ?: "Parcela Desconocida"
 
         // Lógica de Incidencias (Mostrar u Ocultar)
         if (registro.incidencias.isNotEmpty()) {
@@ -78,6 +73,17 @@ class LluviaAdapter (
         } else {
             // Si está vacío, ocultamos el TextView para que no ocupe espacio feo
             holder.tvIncidencias.visibility = View.GONE
+        }
+
+        // Click normal -> Editar
+        holder.itemView.setOnClickListener {
+            onClickEditar(registro)
+        }
+
+        // Click largo -> Borrar
+        holder.itemView.setOnLongClickListener {
+            onLongClickBorrar(registro)
+            true // 'true' indica que hemos consumido el evento (para que no salte también el click normal)
         }
     }
 
