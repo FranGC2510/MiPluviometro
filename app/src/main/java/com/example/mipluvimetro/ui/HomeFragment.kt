@@ -34,6 +34,10 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import android.graphics.Bitmap
+import android.content.ContentValues
+import android.provider.MediaStore
+import java.io.OutputStream
 
 /**
  * Fragmento principal (Dashboard) de la aplicación.
@@ -87,6 +91,15 @@ class HomeFragment : Fragment() {
         }
 
         setupRecyclerView()
+
+        val btnGuardar = view.findViewById<View>(R.id.btnGuardarGrafica)
+        btnGuardar.setOnClickListener {
+            if (barChart.data != null && barChart.data.entryCount > 0) {
+                guardarGraficaEnGaleria()
+            } else {
+                Toast.makeText(requireContext(), "No hay datos para guardar", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     /**
@@ -364,6 +377,36 @@ class HomeFragment : Fragment() {
             textView.text = String.format(getString(R.string.formato_fecha_visible), sdfVisible.format(date!!))
         } catch (e: Exception) {
             textView.text = fechaBd
+        }
+    }
+
+    private fun guardarGraficaEnGaleria() {
+        // Obtener la imagen de la gráfica
+        val bitmap = barChart.chartBitmap
+
+        val nombreArchivo = "Grafica_Lluvia_${System.currentTimeMillis()}.jpg"
+        val contentValues = ContentValues().apply {
+            put(MediaStore.Images.Media.DISPLAY_NAME, nombreArchivo)
+            put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+            // Esto guarda la imagen en la carpeta "Pictures/MiPluviometro"
+            put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/MiPluviometro")
+        }
+
+        try {
+            val resolver = requireContext().contentResolver
+            val uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+
+            if (uri != null) {
+                val stream: OutputStream? = resolver.openOutputStream(uri)
+                if (stream != null) {
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+                    stream.close()
+                    Toast.makeText(requireContext(), "Gráfica guardada en Galería", Toast.LENGTH_LONG).show()
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(requireContext(), "Error al guardar: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 }
