@@ -2,6 +2,7 @@ package com.example.mipluvimetro.ui
 
 import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,6 +20,12 @@ import com.example.mipluvimetro.adapter.LluviaAdapter
 import com.example.mipluvimetro.database.ParcelaDAO
 import com.example.mipluvimetro.database.RegistroDAO
 import com.example.mipluvimetro.models.Registro
+import com.github.mikephil.charting.charts.BarChart
+import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.data.BarData
+import com.github.mikephil.charting.data.BarDataSet
+import com.github.mikephil.charting.data.BarEntry
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.TextInputEditText
@@ -48,6 +55,8 @@ class HomeFragment : Fragment() {
     private val sdfBd = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) // Para SQLite
     private val sdfVisible = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) // Para el usuario
 
+    private lateinit var barChart: BarChart
+
     /**
      * Convierte el archivo XML (fragment_home.xml) en objetos visuales reales.
      */
@@ -70,6 +79,7 @@ class HomeFragment : Fragment() {
 
         tvTotalMes = view.findViewById(R.id.tvTotalMes)
         tvTotalAnio = view.findViewById(R.id.tvTotalAnio)
+        barChart = view.findViewById(R.id.graficaLluvia)
         recyclerView = view.findViewById(R.id.recyclerViewLluvias)
 
         view.findViewById<FloatingActionButton>(R.id.fabAddLluvia).setOnClickListener {
@@ -109,14 +119,75 @@ class HomeFragment : Fragment() {
      * Orquesta la obtención de datos de la BD y actualiza la pantalla.
      */
     private fun cargarDatosDashboard() {
-        // Obtenemos los últimos 20 registros
-        val ultimosRegistros = registroDAO.obtenerUltimos(20)
+        val ultimosRegistros = registroDAO.obtenerUltimos(50)
 
         // Obtenemos TODAS las parcelas y las convertimos a un Mapa (ID -> Nombre)
         val mapaParcelas = parcelaDAO.obtenerTodasIncluidoBorradas().associate { it.id to it.nombre }
 
         adapter.actualizarDatos(ultimosRegistros, mapaParcelas)
         calcularTotales()
+        cargarGrafica(ultimosRegistros)
+    }
+
+    private fun cargarGrafica(registros: List<Registro>) {
+        // Usamos TreeMap para que se ordenen automáticamente por fecha (clave)
+        val mapaMensual = java.util.TreeMap<String, Float>()
+
+        val formatoClave = SimpleDateFormat("yyyy-MM", Locale.getDefault())
+        val formatoEtiqueta = SimpleDateFormat("MMM", Locale.getDefault())
+
+        registros.forEach { registro ->
+            try {
+                val fecha = sdfBd.parse(registro.fecha)
+                if (fecha != null) {
+                    val clave = formatoClave.format(fecha)
+                    val litrosActuales = mapaMensual[clave] ?: 0f
+                    mapaMensual[clave] = litrosActuales + registro.litros
+                }
+            } catch (e: Exception) {
+                // Ignorar fechas mal formadas
+            }
+        }
+
+        val entradas = ArrayList<BarEntry>()
+        val etiquetas = ArrayList<String>()
+        var indice = 0f
+
+        mapaMensual.forEach { (claveAñoMes, litrosTotal) ->
+            entradas.add(BarEntry(indice, litrosTotal))
+
+            val fechaObj = formatoClave.parse(claveAñoMes)
+            val etiquetaBonita = formatoEtiqueta.format(fechaObj!!).replaceFirstChar { it.uppercase() }
+            etiquetas.add(etiquetaBonita)
+
+            indice++
+        }
+
+        val dataSet = BarDataSet(entradas, "Litros Mensuales")
+        dataSet.color = requireContext().getColor(R.color.primary_blue)
+        dataSet.valueTextColor = Color.BLACK
+        dataSet.valueTextSize = 12f
+
+        val data = BarData(dataSet)
+        data.barWidth = 0.6f
+
+        barChart.data = data
+        barChart.description.isEnabled = false
+        barChart.animateY(1500)
+
+        val xAxis = barChart.xAxis
+        xAxis.position = XAxis.XAxisPosition.BOTTOM
+        xAxis.setDrawGridLines(false)
+        xAxis.valueFormatter = IndexAxisValueFormatter(etiquetas)
+        xAxis.granularity = 1f
+        xAxis.labelCount = etiquetas.size
+
+        barChart.axisRight.isEnabled = false
+        barChart.axisLeft.axisMinimum = 0f
+
+        barChart.extraBottomOffset = 10f
+
+        barChart.invalidate()
     }
 
     /**
