@@ -24,6 +24,7 @@ class ParcelaDAO(context: Context) {
             put(AdminSQLite.COL_PARCELA_LAT, parcela.ubicacionLat)
             put(AdminSQLite.COL_PARCELA_LON, parcela.ubicacionLon)
             put(AdminSQLite.COL_PARCELA_ACTIVA, if (parcela.activa) 1 else 0)
+            put(AdminSQLite.COL_PARCELA_IMAGEN, parcela.imagenUri)
         }
         val id = db.insert(AdminSQLite.TABLA_PARCELAS, null, values)
         db.close()
@@ -50,8 +51,9 @@ class ParcelaDAO(context: Context) {
                 val lat = cursor.getDouble(cursor.getColumnIndexOrThrow(AdminSQLite.COL_PARCELA_LAT))
                 val lon = cursor.getDouble(cursor.getColumnIndexOrThrow(AdminSQLite.COL_PARCELA_LON))
                 val activaInt = cursor.getInt(cursor.getColumnIndexOrThrow(AdminSQLite.COL_PARCELA_ACTIVA))
+                val imagenUri = cursor.getString(cursor.getColumnIndexOrThrow(AdminSQLite.COL_PARCELA_IMAGEN))
 
-                lista.add(Parcela(id, nombre, cultivo, lat, lon, activaInt == 1))
+                lista.add(Parcela(id, nombre, cultivo, lat, lon, activaInt == 1, imagenUri))
             } while (cursor.moveToNext())
         }
         cursor.close()
