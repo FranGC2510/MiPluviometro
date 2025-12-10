@@ -90,7 +90,7 @@ class ParcelasFragment : Fragment() {
 
         // TODO: Implementar API de Ubicación real (FusedLocationProvider) más adelante.
         btnGPS.setOnClickListener {
-            latTemp = 40.4168 // Ejemplo: Madrid
+            latTemp = 40.4168
             lonTemp = -3.7038
             tvCoords.text = "Coords: $latTemp, $lonTemp (Simulado)"
             Toast.makeText(requireContext(), getString(R.string.msg_gps_simulado), Toast.LENGTH_SHORT).show()
