@@ -23,4 +23,10 @@
         android:label="Previsión"
         tools:layout="@layout/fragment_clima" />
 
+    <fragment
+        android:id="@+id/nav_ayuda"
+        android:name="com.example.mipluvimetro.ui.AyudaFragment"
+        android:label="Ayuda"
+        tools:layout="@layout/fragment_ayuda" />
+
 </navigation>
