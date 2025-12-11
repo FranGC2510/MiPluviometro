@@ -1,83 +1,87 @@
 # Mi Pluviómetro 
 
-**Gestión Pluviométrica Inteligente para Agricultores**
+**Gestión Pluviométrica Inteligente para Agricultura**
 
-Aplicación Android nativa desarrollada en Kotlin que permite a los agricultores llevar un registro histórico preciso de las precipitaciones en sus fincas y consultar la previsión meteorológica en tiempo real para optimizar la toma de decisiones de riego.
-
----
-
-## Estado del Proyecto
-**Versión Actual:** 1.0 (MVP Funcional)
-**Estado:**  Estable / En fase de optimización
+Aplicación Android nativa desarrollada en Kotlin para la gestión y registro histórico de precipitaciones en fincas agrícolas. Combina almacenamiento local robusto con servicios meteorológicos en tiempo real y capacidades multimedia.
 
 ---
 
-## Funcionalidades Implementadas
+## Descripción del Proyecto
 
-### 1. Motor de Datos (Backend Local)
-* **Persistencia SQLite:** Base de datos relacional nativa optimizada.
-* **Integridad de Datos:** Implementación de **Borrado Lógico (Soft Delete)** para preservar el histórico de lluvias incluso si se elimina una finca.
-* **Arquitectura DAO:** Patrón de acceso a datos separado (`ParcelaDAO` y `RegistroDAO`) con soporte para operaciones CRUD completas.
-* **Migraciones Seguras:** Sistema `onUpgrade` preparado para actualizaciones de esquema sin pérdida de datos.
+"Mi Pluviómetro" digitaliza el tradicional cuaderno de campo. Permite a los agricultores:
+1.  Registrar la lluvia caída en sus diferentes parcelas.
+2.  Visualizar la evolución histórica mediante gráficas interactivas.
+3.  Consultar la previsión meteorológica para planificar riegos.
+4.  Aprender a usar el equipamiento mediante tutoriales integrados.
 
-### 2. Conectividad y Clima (API)
-* **Cliente Retrofit:** Capa de red robusta para comunicación HTTP.
-* **OpenWeatherMap Integration:** Conexión en tiempo real para obtener previsiones meteorológicas a 5 días (bloques de 3 horas).
-* **Buscador de Ciudades:** Interfaz para consultar el clima de cualquier localidad (ej: "Cordoba,ES").
-
-### 3. Interfaz de Usuario (UI/UX)
-* **Diseño Hidro-Moderno:** Paleta de colores personalizada, temas `DayNight` y componentes Material Design.
-* **Navegación:** Flujo fluido mediante **Jetpack Navigation Component**.
-* **Dashboard (Inicio):**
-    * Tarjetas de resumen estadístico (Mes Actual y Año Natural).
-    * Lista de últimos registros con edición (click) y borrado (long click).
-* **Gestión de Parcelas:**
-    * CRUD completo de fincas.
-    * Diálogos modales para alta y edición de datos.
-* **Previsión Meteorológica:**
-    * Vista detallada con iconos, temperatura y probabilidad de lluvia.
-    * Indicadores visuales dinámicos (solo muestra la etiqueta de lluvia si se esperan precipitaciones).
+La aplicación sigue una **Arquitectura por Capas** (UI, Datos, Red) para garantizar la escalabilidad y el mantenimiento.
 
 ---
 
-## Futuras Mejoras (Roadmap)
+## Funcionalidades y Características Técnicas
 
-* [ ] **Geolocalización Real:** Implementar la API de *FusedLocationProvider* para capturar las coordenadas exactas de la finca mediante GPS en lugar de simulación.
-* [ ] **Gráficos Estadísticos:** Visualización de datos mediante librerías como MPAndroidChart (curvas de lluvia anual, comparativas mensuales).
-* [ ] **Exportación de Datos:** Generación de informes en PDF o CSV para compartir o imprimir el registro anual.
-* [ ] **Notificaciones:** Alertas locales para recordar anotar la lluvia o avisos de tormenta basados en la API.
-* [ ] **Backup en la Nube:** Sincronización con Firebase o Google Drive para no perder datos si se cambia de móvil.
+Este proyecto implementa características avanzadas de desarrollo móvil:
+
+### 1. Procesamiento Multimedia
+* **Captura de Imágenes:** Integración con la **Galería Nativa** (usando `ActivityResultContracts`) para asociar fotos reales a cada parcela.
+* **Gestión de URIs:** Persistencia eficiente de rutas de imagen en base de datos sin bloatware (no se guardan BLOBs, sino referencias `content://`).
+
+### 2. Reproducción de Video y Audio
+* **Video Tutorial (Ayuda):** Implementación de **ExoPlayer (Media3)**, el reproductor estándar profesional de Android, con controles integrados y gestión eficiente de recursos.
+* **Feedback Sonoro:** Uso de `MediaPlayer` para emitir efectos de sonido de confirmación al guardar registros, mejorando la experiencia de usuario (UX).
+
+### 3. Exportación y Sistema de Archivos
+* **Generación de Informes:** Capacidad para convertir la gráfica estadística en un archivo de imagen **JPEG**.
+* **Almacenamiento:** Uso de la API `MediaStore` para guardar la imagen en la galería pública del dispositivo, cumpliendo con los estándares de seguridad de **Scoped Storage** (Android 10+).
+
+### 4. Gráficos y Animaciones
+* **Visualización de Datos:** Integración de la librería **MPAndroidChart** para generar gráficas de barras agrupadas por meses.
+* **Animaciones:**
+    * Animación de entrada en el eje Y para las gráficas.
+    * Transiciones suaves entre fragmentos.
+
+### 5. Conectividad API REST
+* **Previsión Meteorológica:** Conexión con **OpenWeatherMap API**.
+* **Networking:** Uso de **Retrofit 2** + **Gson** para la comunicación HTTP y parseo de JSON.
+* **Corrutinas:** Gestión asíncrona de peticiones de red para no bloquear el hilo principal (UI).
+
+### 6. Persistencia de Datos (SQLite)
+* **Base de Datos Relacional:** Uso de `SQLiteOpenHelper`.
+* **Integridad Referencial:** Implementación de **Borrado Lógico (Soft Delete)**. Al borrar una finca, esta desaparece de la vista pero sus datos históricos de lluvia se conservan para no alterar las estadísticas globales.
 
 ---
 
 ## Stack Tecnológico
 
 * **Lenguaje:** Kotlin
-* **Base de Datos:** SQLite (Nativo con `SQLiteOpenHelper`)
-* **Red:** Retrofit 2 + Gson Converter
-* **Concurrencia:** Kotlin Coroutines (Gestión asíncrona de BD y Red)
-* **Navegación:** Android Jetpack Navigation
-* **Diseño:** Material Design Components (XML Layouts)
+* **UI:** XML Layouts, Material Design Components.
+* **Base de Datos:** SQLite Nativo.
+* **Red:** Retrofit 2, OkHttp.
+* **Multimedia:** AndroidX Media3 (ExoPlayer), MediaPlayer.
+* **Gráficos:** MPAndroidChart.
+* **Concurrencia:** Kotlin Coroutines & Lifecycle Scopes.
 
 ---
 
-## Configuración para Desarrolladores
+## Guía de Instalación
 
-Para compilar el proyecto, asegúrate de tener:
-
-1.  **Android Studio:** Versión Koala o superior recomendada.
-2.  **Min SDK:** 24 (Android 7.0 Nougat).
-3.  **API Key:** Necesitas una clave gratuita de [OpenWeatherMap](https://openweathermap.org/).
-    * Insértala en `ui/ClimaFragment.kt` en la constante `API_KEY`.
+1.  Clonar el repositorio.
+2.  Abrir en **Android Studio** (Recomendado: Ladybug o superior).
+3.  **Configurar API Key:**
+    * Obtén una clave gratuita en [OpenWeatherMap](https://openweathermap.org/).
+    * Abre `ui/ClimaFragment.kt` y pega tu clave en la variable `API_KEY`.
+4.  Sincronizar Gradle y ejecutar en emulador o dispositivo físico (Min SDK 24).
 
 ---
 
-## Estructura del Proyecto
+## Futuras Mejoras (Roadmap)
 
-```text
-com.ejemplo.mipluviometro
-├── adapter      # LluviaAdapter, ParcelaAdapter, ClimaAdapter
-├── database     # AdminSQLite, ParcelaDAO, RegistroDAO
-├── model        # Data Classes (Parcela, Registro)
-├── network      # RetrofitClient, WeatherService, Modelos API
-└── ui           # MainActivity, HomeFragment, ParcelasFragment, ClimaFragment
+* [ ] **Geolocalización GPS:** Usar `FusedLocationProvider` para capturar coordenadas exactas de la finca.
+* [ ] **Backup Cloud:** Sincronización con Firebase para respaldo de datos.
+* [ ] **Notificaciones Push:** Avisos de tormenta basados en la ubicación.
+* [ ] **Modo Oscuro:** Adaptación completa del tema `DayNight`.
+
+---
+
+**Desarrollado por:** Fco Javier García Cañero
+**Asignatura:** Desarrollo de Aplicaciones Móviles

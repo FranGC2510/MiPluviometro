@@ -1,14 +1,17 @@
 package com.example.mipluvimetro.ui
 
 import android.app.AlertDialog
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,6 +29,17 @@ class ParcelasFragment : Fragment() {
     private lateinit var parcelaDAO: ParcelaDAO
     private lateinit var adapter: ParcelaAdapter
     private lateinit var recyclerView: RecyclerView
+    private var uriImagenSeleccionada: Uri? = null
+    private lateinit var ivImagenDialogo: ImageView
+
+    private val selectorGaleria = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        if (uri != null) {
+            uriImagenSeleccionada = uri
+            ivImagenDialogo.setImageURI(uri)
+            ivImagenDialogo.setPadding(0,0,0,0)
+            ivImagenDialogo.imageTintList = null
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -78,11 +92,19 @@ class ParcelasFragment : Fragment() {
         // Inflamos nuestro diseño personalizado
         val dialogView = inflater.inflate(R.layout.dialog_nueva_parcela, null)
         builder.setView(dialogView)
+        uriImagenSeleccionada = null
 
         val etNombre = dialogView.findViewById<EditText>(R.id.etNombreParcela)
         val etCultivo = dialogView.findViewById<EditText>(R.id.etCultivoParcela)
         val btnGPS = dialogView.findViewById<Button>(R.id.btnUsarGPS)
         val tvCoords = dialogView.findViewById<TextView>(R.id.tvCoordenadasInfo)
+        val cardImagen = dialogView.findViewById<View>(R.id.cardImagenParcela)
+        ivImagenDialogo = dialogView.findViewById(R.id.ivImagenSeleccionada)
+
+        cardImagen.setOnClickListener {
+            // "image/*" significa: déjame elegir cualquier tipo de imagen
+            selectorGaleria.launch("image/*")
+        }
 
         // Variables temporales para coordenadas (por defecto 0.0)
         var latTemp = 0.0
@@ -105,7 +127,8 @@ class ParcelasFragment : Fragment() {
                     nombre = nombre,
                     cultivo = cultivo,
                     ubicacionLat = latTemp,
-                    ubicacionLon = lonTemp
+                    ubicacionLon = lonTemp,
+                    imagenUri = uriImagenSeleccionada?.toString()
                 )
                 // Guardamos en BD
                 parcelaDAO.insertar(nuevaParcela)

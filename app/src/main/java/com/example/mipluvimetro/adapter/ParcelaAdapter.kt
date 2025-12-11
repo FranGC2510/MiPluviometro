@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mipluvimetro.R
@@ -33,6 +34,7 @@ class ParcelaAdapter (
         val tvNombre: TextView = view.findViewById(R.id.tvNombreFinca)
         val tvCultivo: TextView = view.findViewById(R.id.tvCultivo)
         val btnBorrar: ImageButton = view.findViewById(R.id.btnBorrarParcela)
+        val ivIconoParcela: ImageView = view.findViewById(R.id.ivIconoParcela)
     }
 
     /**
@@ -53,9 +55,22 @@ class ParcelaAdapter (
         holder.tvNombre.text = parcela.nombre
         holder.tvCultivo.text = "Cultivo: ${parcela.cultivo}"
 
+        if (parcela.imagenUri != null) {
+            try {
+                val uri = android.net.Uri.parse(parcela.imagenUri)
+                holder.ivIconoParcela.setImageURI(uri)
+                holder.ivIconoParcela.setPadding(0,0,0,0)
+                holder.ivIconoParcela.imageTintList = null // Quitar tinte azul
+            } catch (e: Exception) {
+                ponerIconoPorDefecto(holder)
+            }
+        } else {
+            ponerIconoPorDefecto(holder)
+        }
+
         // Configurar el click de la papelera
         holder.btnBorrar.setOnClickListener {
-            onBorrarClick(parcela) // Ejecutamos la acción que nos pasó el Fragmento
+            onBorrarClick(parcela)
         }
     }
 
@@ -71,5 +86,11 @@ class ParcelaAdapter (
     fun actualizarLista(nuevaLista: List<Parcela>) {
         this.listaParcelas = nuevaLista
         notifyDataSetChanged()
+    }
+
+    private fun ponerIconoPorDefecto(holder: ParcelaViewHolder) {
+        holder.ivIconoParcela.setImageResource(R.drawable.ic_parcelas)
+        holder.ivIconoParcela.setPadding(20,20,20,20) // Un poco de margen para el icono
+        holder.ivIconoParcela.setColorFilter(holder.itemView.context.getColor(R.color.primary_blue))
     }
 }
